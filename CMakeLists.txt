@@ -16,6 +16,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 if (PROJECT_IS_TOP_LEVEL)
     target_compile_definitions(${PROJECT_NAME} PRIVATE KX_CUSTOMEMOTESAPI_EXPORTING)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 endif()
 
 if (NOT DEFINED ENV{GEODE_SDK})

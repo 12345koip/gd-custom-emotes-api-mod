@@ -12,7 +12,7 @@
 	"developer": "kx_",
 	"description": "Centralised support for custom emotes in mods",
     "api": {
-        "include": []
+        "include": ["include/*.hpp"]
     },
 	"dependencies": {
 		"geode.node-ids": ">=v1.23.3"
