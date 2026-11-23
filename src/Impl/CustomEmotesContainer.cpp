@@ -46,9 +46,28 @@ bool CustomEmotesContainer::IsFull() const {
     return this->m_emotes.size() == kBaseStep;
 }
 
-Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::string_view filePath, const std::string_view name) {
+
+
+//create an EmoteDef for the given CustomEmote data.
+static EmoteDef makeEmoteDefForCustom(const std::string_view name, const int absoluteIndex, const CustomEmoteOptions& options, const bool isAlias) {
+    return {
+        .m_name = name.data(),
+        .m_particleIndex = static_cast<unsigned int>(absoluteIndex), //TODO: FIX once changed in bindings
+        .m_scale = options.scale,
+        .m_x = options.x, .m_y = options.y,
+        .m_color = options.color,
+        .m_isAlias = isAlias,
+        .m_flipX = options.flipX
+    };
+}
+
+
+Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::string_view filePath, const std::string& rawEmoteName, const CustomEmoteOptions& options) {
     if (this->IsFull())
         return Err("This container is full. Please use another one.");
+
+    //must lower it to match vanilla.
+    const auto emoteName = geode::utils::string::toLower(rawEmoteName);
 
     auto* textureCache = CCTextureCache::sharedTextureCache();
     auto* spriteFrameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
@@ -57,33 +76,68 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
     if (!texture)
         return Err("Image '{}' couldn't be added to the texture cache. Please check the path and try again!", filePath);
 
-    //...now see if it's there already.
     const auto size = texture->getContentSize();
-    const auto index = this->m_particleBase + this->m_nextRelativeIndex;
-    const auto frameName = fmt::format("particle_{}_001.png", index);
-    if (spriteFrameCache->spriteFrameByName(frameName.data()))
-        return Err("Another emote is already using this name: '{}'", frameName);
+    const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
+    const auto targetName = fmt::format("particle_{}_001.png", absoluteIndex);
+
+
+    //...now see if it's there already.
+    if (spriteFrameCache->spriteFrameByName(targetName.data()))
+        return Err("Another emote is already using this sprite frame: '{}'", targetName);
 
     //and add it under the particle name.
     auto* frame = CCSpriteFrame::createWithTexture(texture, {0, 0, size.width, size.height});
-    spriteFrameCache->addSpriteFrame(frame, frameName.c_str());
+    spriteFrameCache->addSpriteFrame(frame, targetName.c_str());
 
 
 
-    //need to give it a def.
-    //TODO: make this a helper for NewEmoteFromFrame or whatever its called
-    EmoteDef def {
-        .m_name = name.data(),
-        .m_particleIndex = static_cast<unsigned int>(index), //TODO: FIX once changed in bindings
-        .m_scale = 0.8f,
-        .m_x = 0.0f, .m_y = 0.0f,
-        .m_color = ccColor3B(230, 230, 230),
-        .m_isAlias = false,
-        .m_flipX = false
-    };
+    //construct custom emote def.
+    const auto customDef = std::make_shared<CustomEmoteDef>();
+    customDef->m_name = emoteName;
 
-    auto customDef = std::make_shared<CustomEmoteDef>();
-    customDef->m_name = name;
+    const auto def = makeEmoteDefForCustom(customDef->m_name, absoluteIndex, options, false); //the string_view::data() dangles otherwise.
+    customDef->m_canonicalDef = customDef.get();
+    customDef->m_def = def;
+    customDef->m_relativeParticleIndex = this->m_nextRelativeIndex++;
+    customDef->m_owningContainer = this;
+    customDef->m_enabled = true;
+
+    this->m_emotes.push_back(customDef);
+    return Ok(customDef.get());
+}
+
+
+
+geode::Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options) {
+    if (this->IsFull())
+        return Err("This container is full. Please use another one.");
+
+    //must lower it to match vanilla.
+    const auto emoteName = geode::utils::string::toLower(rawEmoteName);
+
+    //ensure the sprite is loaded from the sheet.
+    auto* spriteFrameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
+    auto* frame = spriteFrameCache->spriteFrameByName(frameName.data());
+    if (!frame)
+        return Err("Sprite frame '{}' not found. Please ensure the spritesheet is loaded.", frameName);
+
+    const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
+    const auto targetName = fmt::format("particle_{}_001.png", absoluteIndex);
+
+    //...now see if it's there already.
+    if (spriteFrameCache->spriteFrameByName(targetName.data()))
+        return Err("Another emote is already using this sprite frame: '{}'", targetName);
+
+    spriteFrameCache->addSpriteFrame(frame, targetName.c_str());
+
+
+
+
+    //construct custom emote def.
+    const auto customDef = std::make_shared<CustomEmoteDef>();
+    customDef->m_name = emoteName;
+
+    const auto def = makeEmoteDefForCustom(customDef->m_name, absoluteIndex, options, false); //the string_view::data() dangles otherwise.
     customDef->m_canonicalDef = customDef.get();
     customDef->m_def = def;
     customDef->m_relativeParticleIndex = this->m_nextRelativeIndex++;

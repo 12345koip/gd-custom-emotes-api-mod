@@ -17,6 +17,7 @@ namespace CustomEmotes {
 
     /**
      * A class representing a custom emote.
+     * @note This class does not extend EmoteDef due to necessary field type changes.
      */
     class EMOTESAPI_DLL CustomEmoteDef {
         private:
@@ -36,7 +37,7 @@ namespace CustomEmotes {
             CustomEmotesContainer* m_owningContainer;
 
             /**
-             * The CustomEmoteDef this def is an alias to. `nullptr` if this CustomEmoteDef is not an alias.
+             * The CustomEmoteDef this def is an alias to. Set to the current object if this CustomEmoteDef is not an alias.
              */
             CustomEmoteDef* m_canonicalDef;
 
@@ -95,15 +96,82 @@ namespace CustomEmotes {
 
 
     /**
+     * A helper structure used to provide options for a CustomEmoteDef.
+     */
+    class EMOTESAPI_DLL CustomEmoteOptions {
+        public:
+            CustomEmoteOptions() = default;
+
+            /**
+             * The scale of the emote. Corresponds to `EmoteDef::m_scale`.
+             */
+            float scale = 0.8f;
+
+            /**
+             * Corresponds to `EmoteDef::m_x`.
+             */
+            float x = 0.0f;
+
+            /**
+             * Corresponds to `EmoteDef::m_y`.
+             */
+            float y = 0.0f;
+
+            /**
+             * The color of the emote. Corresponds to `EmoteDef::m_color`.
+             */
+            cocos2d::ccColor3B color {230, 235, 230};
+
+            /**
+             * Whether or not the emote should be flipped horizontally. Corresponds to `EmoteDef::m_flipX`.
+             */
+            bool flipX = false;
+
+
+
+
+            /**
+             * `operator=` to support conversion from an `EmoteDef`.
+             * @param def The `EmoteDef` to refer to.
+             * @return The constructed `CustomEmoteOptions`.
+             */
+            CustomEmoteOptions& operator=(const EmoteDef& def);
+
+            /**
+             * `operator=` to support conversion from an `EmoteDef`.
+             * @param def The `EmoteDef` to refer to.
+             * @return The constructed `CustomEmoteOptions`.
+             */
+            CustomEmoteOptions& operator=(EmoteDef&& def);
+
+            /**
+             * Converting constructor to support conversion from an `EmoteDef`.
+             * @param def The `EmoteDef` to refer to.
+             */
+            explicit CustomEmoteOptions(const EmoteDef& def);
+
+            /**
+             * Converting constructor to support conversion from an `EmoteDef`.
+             * @param def The `EmoteDef` to refer to.
+             */
+            explicit CustomEmoteOptions(EmoteDef&& def);
+    };
+
+    /**
      * A container class for CustomEmoteDefs. One container represents one new section to be drawn in the EmotePickerPopup.
      */
     class EMOTESAPI_DLL CustomEmotesContainer {
         private:
             /**
              * The internal container for all the custom emotes that are a part of this container.
-             * @note this is inherently ordered by index.
+             * @note this is inherently ordered by index. Aliases are not stored here (see `m_emoteAliases`)
              */
             std::vector<std::shared_ptr<CustomEmoteDef>> m_emotes {};
+
+            /**
+             * The internal container used for all aliases of custom emotes that are a part of this container.
+             */
+            std::map<int, std::vector<std::shared_ptr<CustomEmoteDef>>> m_emoteAliases;
 
             /**
              * The name of this container.
@@ -156,19 +224,22 @@ namespace CustomEmotes {
             /**
              * Creates a new custom emote using the provided image and name.
              * @param filePath The path to the standalone emote image file.
-             * @param name The name for the emote.
+             * @param emoteName The name for the emote. This will be converted to lowercase.
+             * @param options Optional extra data for the custom emote.
              * @return The CustomEmoteDef associated with the emote, if creation was successful.
              * @note If you are using a spritesheet, use `NewEmoteFromSpritesheet` instead.
              */
-            geode::Result<CustomEmoteDef*> NewEmoteFromImage(const std::string_view filePath, const std::string_view name);
+            geode::Result<CustomEmoteDef*> NewEmoteFromImage(const std::string_view filePath, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
 
             /**
              * Creates a new custom emote using the provided sprite frame and name.
              * @param frameName The frame name of the target sprite in its spritesheet.
+             * @param emoteName The name to use for the emote. This will be converted to lowercase.
+             * @param options Optional extra data for the custom emote.
              * @return The CustomEmoteDef associated with the emote, if creation was successful.
              * @note If you are using a standalone image, use `NewEmoteFromImage` instead.
              */
-            geode::Result<CustomEmoteDef*> NewEmoteFromSpritesheet(const std::string_view frameName);
+            geode::Result<CustomEmoteDef*> NewEmoteFromSpritesheet(const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
 
             /**
              * Checks if this container is full.
