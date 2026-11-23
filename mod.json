@@ -11,6 +11,7 @@
 	"version": "v1.0.0",
 	"developer": "kx_",
 	"description": "Centralised support for custom emotes in mods",
+    "early-load": true,
     "api": {
         "include": ["include/*.hpp"]
     },

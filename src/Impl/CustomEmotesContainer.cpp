@@ -5,7 +5,7 @@ using namespace geode::prelude;
 using namespace CustomEmotes::Impl;
 using namespace CustomEmotes;
 
-Result<CustomEmotesContainer*> CustomEmotesContainer::create(const std::string_view name) {
+Result<CustomEmotesContainer*> CustomEmotesContainer::create(const std::string& name) {
     auto* dataManager = DataManager::GetSingleton();
     const int containerBase = dataManager->GetNextEmoteContainerBase();
 
@@ -46,6 +46,23 @@ bool CustomEmotesContainer::IsFull() const {
     return this->m_emotes.size() == kBaseStep;
 }
 
+int CustomEmotesContainer::GetParticleIndexBase() const {
+    return this->m_particleBase;
+}
+
+
+Result<CustomEmoteDef*> CustomEmotesContainer::AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName) {
+    //NOTE: multiple aliases for an emote that use the same name aren't inherently an issue, so they aren't checked for here.
+
+    auto alias = std::make_shared<CustomEmoteDef>(*emote);
+    alias->m_name = aliasName;
+    alias->m_canonicalDef = emote;
+    alias->m_def.m_isAlias = true;
+    alias->m_def.m_name = alias->m_name.c_str();
+
+    this->m_emoteAliases[emote->m_relativeParticleIndex].push_back(alias);
+    return Ok(alias.get());
+}
 
 
 //create an EmoteDef for the given CustomEmote data.
@@ -108,7 +125,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
 
 
 
-geode::Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options) {
+Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options) {
     if (this->IsFull())
         return Err("This container is full. Please use another one.");
 

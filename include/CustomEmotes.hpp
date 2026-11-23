@@ -60,7 +60,7 @@ namespace CustomEmotes {
              * @param aliasName The name for the alias.
              * @return A pointer to the CustomEmoteDef for the alias, if created successfully.
              */
-            geode::Result<CustomEmoteDef*> AddAlias(const std::string_view aliasName);
+            geode::Result<CustomEmoteDef*> AddAlias(const std::string& aliasName);
 
             /**
              * Controls this emote's enabled state. A disabled emote won't render anywhere.
@@ -248,10 +248,24 @@ namespace CustomEmotes {
             bool IsFull() const;
 
             /**
+             * Retrieves the relative base applied to CustomEmoteDefs which are a part of this container.
+             * @return The base index of this container.
+             */
+            int GetParticleIndexBase() const;
+
+            /**
+             * Creates an emote alias for the given custom emote.
+             * @param emote The custom emote to create an alias for.
+             * @param aliasName The name to be given to the alias.
+             * @return The CustomEmoteDef for the alias, if created successfully.
+             */
+            geode::Result<CustomEmoteDef*> AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName);
+
+            /**
              * Creates a new CustomEmotesContainer with the provided name.
              * @param name The name for the container.
              * @return The container, if creation was successful.
              */
-            static geode::Result<CustomEmotesContainer*> create(const std::string_view name);
+            static geode::Result<CustomEmotesContainer*> create(const std::string& name);
     };
 }
