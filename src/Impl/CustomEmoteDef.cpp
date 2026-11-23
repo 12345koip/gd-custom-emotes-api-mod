@@ -11,7 +11,7 @@ CustomEmoteDef* CustomEmoteDef::GetCanonicalDef() const {
     return this->m_canonicalDef;
 }
 
-const EmoteDef* CustomEmoteDef::GetDef() const {
+EmoteDef* CustomEmoteDef::GetDef() {
     return &this->m_def;
 }
 

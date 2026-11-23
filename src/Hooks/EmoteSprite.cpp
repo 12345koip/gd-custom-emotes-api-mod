@@ -1,16 +1,27 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EmoteSprite.hpp>
+#include "src/Impl/DataManager/DataManager.hpp"
 
 using namespace geode::prelude;
+using namespace CustomEmotes::Impl;
 
 class $modify(EmoteSprite) {
     static void onModify(auto& self) {
-        if (!self.setHookPriority("EmoteSprite::defForName", Priority::First))
+        if (!self.setHookPriority("EmoteSprite::defForName", Priority::VeryEarly))
             log::warn("Could not set hook priority for EmoteSprite::defForName. Custom emotes may not work as expected!");
     }
 
     static EmoteDef* defForName(const std::string& name) {
-        log::warn("defForName called");
+        auto* dataManager = DataManager::GetSingleton();
+
+        for (const auto& container: dataManager->GetEmoteContainers()) {
+            const auto result = container->DefByName(name);
+            if (result.isOk()) {
+                const auto& customDef = result.unwrap();
+                return customDef->GetDef();
+            }
+        }
+
         return EmoteSprite::defForName(name);
     }
 };

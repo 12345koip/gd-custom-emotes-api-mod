@@ -80,8 +80,11 @@ namespace CustomEmotes {
 
             /**
              * @return The EmoteDef corresponding to this emote.
+             * @note It is highly recommended that you do not modify this internal EmoteDef. Doing so may
+             * break your custom emotes and the API entirely. This getter is not marked as `const` for internal implementation
+             * reasons, and to allow the internal EmoteDef to be modified if absolutely necessary.
              */
-            const EmoteDef* GetDef() const;
+            EmoteDef* GetDef();
 
             /**
              * @return Whether or not this CustomEmoteDef is an alias for another.
@@ -218,6 +221,7 @@ namespace CustomEmotes {
              * Returns the first CustomEmoteDef that matches `name`.
              * @param name The name of the emote to find the CustomEmoteDef for.
              * @return The corresponding CustomEmoteDef, if found.
+             * @note Try and avoid this where possible.
              */
             geode::Result<CustomEmoteDef*> DefByName(const std::string_view name) const;
 

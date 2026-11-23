@@ -1,5 +1,6 @@
 #include "include/CustomEmotes.hpp"
 #include "DataManager/DataManager.hpp"
+#include <ranges>
 
 using namespace geode::prelude;
 using namespace CustomEmotes::Impl;
@@ -31,15 +32,27 @@ Result<CustomEmoteDef*> CustomEmotesContainer::DefByAbsoluteIndex(const int inde
     return this->DefByRelativeIndex(relativeIndex);
 }
 
+//horrible time complexity, but fuck it. there's no better way i can think of
 Result<CustomEmoteDef*> CustomEmotesContainer::DefByName(const std::string_view name) const {
-    const auto it = std::ranges::find_if(this->m_emotes, [name](const auto& other) -> bool {
+    //search standalones
+    const auto it_standalone = std::ranges::find_if(this->m_emotes, [name](const auto& other) -> bool {
         return other->m_name == name;
     });
 
-    if (it == this->m_emotes.end())
-        return Err("No CustomEmoteDef with name '{}' found in container", name);
+    if (it_standalone != this->m_emotes.end())
+        return Ok(it_standalone->get());
 
-    return Ok(it->get());
+    //now search aliases
+    for (const auto& aliasContainer: this->m_emoteAliases | std::views::values) {
+        const auto it_alias = std::ranges::find_if(aliasContainer, [name](const auto& other) -> bool {
+            return other->m_name == name;
+        });
+
+        if (it_alias != aliasContainer.end())
+            return Ok(it_alias->get());
+    }
+
+    return Err("No CustomEmoteDef with name '{}' found in container", name);
 }
 
 bool CustomEmotesContainer::IsFull() const {
@@ -164,3 +177,5 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
     this->m_emotes.push_back(customDef);
     return Ok(customDef.get());
 }
+
+//TODO: figure out how to tie a custom container to a mod ID
