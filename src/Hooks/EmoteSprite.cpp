@@ -16,7 +16,7 @@ class $modify(EmoteSprite) {
 
         for (const auto& container: dataManager->GetEmoteContainers()) {
             const auto result = container->DefByName(name);
-            if (!result.isOk()) continue;
+            if (result.isErr()) continue;
 
             const auto& customDef = result.unwrap();
             const EmoteDef* matchingDef = customDef->GetEmoteDef();
