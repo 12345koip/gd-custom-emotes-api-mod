@@ -32,7 +32,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::DefByAbsoluteIndex(const int inde
     return this->DefByRelativeIndex(relativeIndex);
 }
 
-//horrible time complexity, but fuck it. there's no better way i can think of
+//horrible time complexity, but oh well. there's no better way i can think of
 Result<CustomEmoteDef*> CustomEmotesContainer::DefByName(const std::string_view name) const {
     //search standalones
     const auto it_standalone = std::ranges::find_if(this->m_emotes, [name](const auto& other) -> bool {
@@ -77,16 +77,47 @@ Result<CustomEmoteDef*> CustomEmotesContainer::AddAliasForEmote(CustomEmoteDef* 
     return Ok(alias.get());
 }
 
+const std::vector<CustomEmoteDef*> CustomEmotesContainer::GetAllCustomEmoteDefs() const {
+    std::vector<CustomEmoteDef*> out {};
+    out.reserve(this->m_emotes.size());
+
+    std::ranges::transform(this->m_emotes, std::back_inserter(out), [](const auto& ptr) -> CustomEmoteDef* {
+        return ptr.get();
+    });
+
+    return out;
+}
+
+const std::vector<CustomEmoteDef*> CustomEmotesContainer::GetAllCustomEmoteAliases() const {
+    std::vector<CustomEmoteDef*> out {};
+
+    //okay this views stuff is actually insanely cool
+    auto rawPtrs = this->m_emoteAliases | std::views::values | std::views::join | std::views::transform([](const auto& ptr) -> CustomEmoteDef* {
+        return ptr.get();
+    });
+
+    out.assign(rawPtrs.begin(), rawPtrs.end());
+    return out;
+}
+
+bool CustomEmotesContainer::IsEnabled() const {
+    return this->m_enabled;
+}
+
+void CustomEmotesContainer::SetEnabled(const bool newEnabled) {
+    this->m_enabled = newEnabled;
+}
+
 
 //create an EmoteDef for the given CustomEmote data.
-static EmoteDef makeEmoteDefForCustom(const std::string_view name, const int absoluteIndex, const CustomEmoteOptions& options, const bool isAlias) {
-    return {
+static EmoteDef makeEmoteDefForCustom(const std::string_view name, const int absoluteIndex, const CustomEmoteOptions& options) {
+    return EmoteDef {
         .m_name = name.data(),
         .m_particleIndex = static_cast<unsigned int>(absoluteIndex), //TODO: FIX once changed in bindings
         .m_scale = options.scale,
         .m_x = options.x, .m_y = options.y,
         .m_color = options.color,
-        .m_isAlias = isAlias,
+        .m_isAlias = false,
         .m_flipX = options.flipX
     };
 }
@@ -125,7 +156,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
     const auto customDef = std::make_shared<CustomEmoteDef>();
     customDef->m_name = emoteName;
 
-    const auto def = makeEmoteDefForCustom(customDef->m_name, absoluteIndex, options, false); //the string_view::data() dangles otherwise.
+    const auto def = makeEmoteDefForCustom(customDef->m_name, absoluteIndex, options); //the string_view::data() dangles otherwise.
     customDef->m_canonicalDef = customDef.get();
     customDef->m_def = def;
     customDef->m_relativeParticleIndex = this->m_nextRelativeIndex++;
@@ -167,7 +198,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
     const auto customDef = std::make_shared<CustomEmoteDef>();
     customDef->m_name = emoteName;
 
-    const auto def = makeEmoteDefForCustom(customDef->m_name, absoluteIndex, options, false); //the string_view::data() dangles otherwise.
+    const auto def = makeEmoteDefForCustom(customDef->m_name, absoluteIndex, options);
     customDef->m_canonicalDef = customDef.get();
     customDef->m_def = def;
     customDef->m_relativeParticleIndex = this->m_nextRelativeIndex++;
@@ -177,5 +208,3 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
     this->m_emotes.push_back(customDef);
     return Ok(customDef.get());
 }
-
-//TODO: figure out how to tie a custom container to a mod ID

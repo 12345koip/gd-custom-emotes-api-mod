@@ -52,6 +52,10 @@ void CustomEmoteDef::SetFlipX(const bool newFlipX) {
     this->m_def.m_flipX = newFlipX;
 }
 
+bool CustomEmoteDef::IsEnabled() const {
+    return this->m_enabled;
+}
+
 Result<CustomEmoteDef*> CustomEmoteDef::AddAlias(const std::string& aliasName) {
     return this->m_owningContainer->AddAliasForEmote(this, aliasName);
 }

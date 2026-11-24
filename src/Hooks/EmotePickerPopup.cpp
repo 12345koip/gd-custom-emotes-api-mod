@@ -1,11 +1,48 @@
+#include <ranges>
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EmotePickerPopup.hpp>
 #include "src/Impl/DataManager/DataManager.hpp"
 
 using namespace geode::prelude;
 using namespace CustomEmotes::Impl;
+using namespace CustomEmotes;
+
+
+//helpers for layoutEmoteGrid.
+static void placeEmoteCell(CCNode* node, float& y, int& col, int& placedInSection, const int maxCol, const float padX) {
+    if (col == maxCol) { //max columns, newline
+        y -= 26.0f;
+        col = 0;
+    }
+
+    node->setPosition({
+        padX + 13.0f + (26.0f * col),
+        y - 13.0f
+    });
+
+    ++col;
+    ++placedInSection;
+}
+
+static void endSection(float& y, int& col, int& numPlacedInSection) {
+    if (numPlacedInSection == 0) return;
+
+    y -= 38.0f;
+
+    col = 0;
+    numPlacedInSection = 0;
+}
+
+
+
+
 
 class $modify(EmotePickerPopup) {
+    struct Fields {
+        std::map<CustomEmotesContainer*, std::vector<CCMenuItemSpriteExtra*>> customEmotes {};
+    };
+
+
     static void onModify(auto& self) {
         if (!self.setHookPriority("EmotePickerPopup::onBuildWindowContent", Priority::VeryEarly))
             log::warn("Could not set hook priority for EmotePickerPopup::onBuildWindowContent. Custom emotes may not work as expected!");
@@ -16,9 +53,67 @@ class $modify(EmotePickerPopup) {
 
     void onBuildWindowContent() {
         EmotePickerPopup::onBuildWindowContent();
+
+        //remove all current.
+        for (auto& container: this->m_fields->customEmotes | std::views::values) {
+            for (const auto& emoteCell: container)
+                emoteCell->removeFromParent();
+
+            container.clear();
+        }
+
+        //tag the custom recent emotes so onPickEmote recognises them
+        for (auto* recent: this->m_recentEmoteButtons) {
+            auto* sprite = static_cast<EmoteSprite*>(recent->getNormalImage());
+
+            if (sprite->m_emoteDef->m_particleIndex >= kStartingBase)
+                sprite->setTag(sprite->m_emoteDef->m_particleIndex);
+        }
+
+        //now add all custom emotes.
+        auto* dataManager = DataManager::GetSingleton();
+        for (const auto& container: dataManager->GetEmoteContainers()) {
+            if (!container->IsEnabled()) continue;
+
+            for (const auto& customDef: container->GetAllCustomEmoteDefs()) {
+                if (!customDef->IsEnabled()) continue;
+
+                const auto* rawDef = customDef->GetEmoteDef();
+                auto cell = this->addCell(rawDef, rawDef->m_particleIndex);
+                if (!cell) continue;
+
+                cell->setID(fmt::format("custom_emote_{}", rawDef->m_particleIndex));
+                cell->setEnabled(this->m_canAdd);
+                cell->setOpacity(this->m_canAdd? 255: 90);
+                this->m_fields->customEmotes[container.get()].push_back(cell);
+            }
+        }
+
+        this->layoutEmoteGrid();
     }
 
     void layoutEmoteGrid() {
         EmotePickerPopup::layoutEmoteGrid();
+
+        //the last non-alias def is at index 195, so its placed last and is hence the lowest in the scroller.
+        const auto lastCell = this->m_scrollContentMenu->getChildByTag(195);
+        if (!lastCell) return;
+        const float lowestY = lastCell->getPositionY();
+
+        const int maxCols = std::max(3, static_cast<int>((this->m_windowWidth - 8.0f) / 26.0f));
+        const float padX = (this->m_windowWidth - (maxCols * 26.0f)) * 0.5f;
+        float currentY = lowestY - 25.0f;
+        int currentCol = 0;
+        int numPlacedInSection = 0;
+
+        //place all custom emotes.
+        for (const auto& spriteList: this->m_fields->customEmotes | std::views::values) {
+            for (auto* sprite: spriteList)
+                placeEmoteCell(sprite, currentY, currentCol, numPlacedInSection, maxCols, padX);
+
+            endSection(currentY, currentCol, numPlacedInSection);
+        }
+
+        this->m_scrollContentLayer->setContentHeight(5.0f - currentY);
     }
 };

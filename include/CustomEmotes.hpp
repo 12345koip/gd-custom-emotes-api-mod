@@ -69,6 +69,11 @@ namespace CustomEmotes {
             void SetEnabled(const bool enabled);
 
             /**
+             * @return Whether or not this custom emote will show in the scroller
+             */
+            bool IsEnabled() const;
+
+            /**
              * @return The particle index of this emote, relative to it's owning CustomEmoteContainer's base.
              */
             int GetRelativeParticleIndex() const;
@@ -162,35 +167,6 @@ namespace CustomEmotes {
              * Whether or not the emote should be flipped horizontally. Corresponds to `EmoteDef::m_flipX`.
              */
             bool flipX = false;
-
-
-
-
-            /**
-             * `operator=` to support conversion from an `EmoteDef`.
-             * @param def The `EmoteDef` to refer to.
-             * @return The constructed `CustomEmoteOptions`.
-             */
-            CustomEmoteOptions& operator=(const EmoteDef& def);
-
-            /**
-             * `operator=` to support conversion from an `EmoteDef`.
-             * @param def The `EmoteDef` to refer to.
-             * @return The constructed `CustomEmoteOptions`.
-             */
-            CustomEmoteOptions& operator=(EmoteDef&& def);
-
-            /**
-             * Converting constructor to support conversion from an `EmoteDef`.
-             * @param def The `EmoteDef` to refer to.
-             */
-            explicit CustomEmoteOptions(const EmoteDef& def);
-
-            /**
-             * Converting constructor to support conversion from an `EmoteDef`.
-             * @param def The `EmoteDef` to refer to.
-             */
-            explicit CustomEmoteOptions(EmoteDef&& def);
     };
 
     /**
@@ -291,12 +267,33 @@ namespace CustomEmotes {
             int GetParticleIndexBase() const;
 
             /**
+             * @return Whether or not this container is enabled.
+             */
+            bool IsEnabled() const;
+
+            /**
+             * Setter to control if this container should render in the scroller.
+             * @param newEnabled Whether or not this container should show in the scroller.
+             */
+            void SetEnabled(const bool newEnabled);
+
+            /**
              * Creates an emote alias for the given custom emote.
              * @param emote The custom emote to create an alias for.
              * @param aliasName The name to be given to the alias.
              * @return The CustomEmoteDef for the alias, if created successfully.
              */
             geode::Result<CustomEmoteDef*> AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName);
+
+            /**
+             * @return All the CustomEmoteDefs associated with this container.
+             */
+            const std::vector<CustomEmoteDef*> GetAllCustomEmoteDefs() const;
+
+            /**
+             * @return All the CustomEmoteDef aliases associated with this container.
+             */
+            const std::vector<CustomEmoteDef*> GetAllCustomEmoteAliases() const;
 
             /**
              * Creates a new CustomEmotesContainer with the provided name.
