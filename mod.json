@@ -11,11 +11,14 @@
 	"version": "v1.0.0",
 	"developer": "kx_",
 	"description": "Centralised support for custom emotes in mods",
-    "early-load": true,
+    "tags": ["api", "developer", "interface"],
     "api": {
         "include": ["include/*.hpp"]
     },
 	"dependencies": {
 		"geode.node-ids": ">=v1.23.3"
-	}
+	},
+    "links": {
+        "source": "https://www.github.com/12345koip/gd-custom-emotes-api-mod"
+    }
 }

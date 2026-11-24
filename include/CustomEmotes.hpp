@@ -85,6 +85,8 @@ namespace CustomEmotes {
 
             /**
              * @return The EmoteDef corresponding to this emote.
+             * @note To read standard game properties of this CustomEmoteDef, you should use this function
+             * and read directly from its return result.
              */
             const EmoteDef* GetEmoteDef() const;
 
@@ -186,7 +188,7 @@ namespace CustomEmotes {
             std::map<int, std::vector<std::shared_ptr<CustomEmoteDef>>> m_emoteAliases;
 
             /**
-             * The name of this container.
+             * The name of this container. This is not used by this mod, but other mods may wish to use it.
              */
             std::string m_name;
 
@@ -253,6 +255,16 @@ namespace CustomEmotes {
              * @note If you are using a standalone image, use `NewEmoteFromImage` instead.
              */
             geode::Result<CustomEmoteDef*> NewEmoteFromSpritesheet(const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
+
+            /**
+             * @return The name of this CustomEmotesContainer.
+             */
+            const std::string_view GetName() const;
+
+            /**
+             * @param newName The new name for this container.
+             */
+            void SetName(const std::string& newName);
 
             /**
              * Checks if this container is full.

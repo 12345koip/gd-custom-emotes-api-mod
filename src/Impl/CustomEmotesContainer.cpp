@@ -63,6 +63,14 @@ int CustomEmotesContainer::GetParticleIndexBase() const {
     return this->m_particleBase;
 }
 
+const std::string_view CustomEmotesContainer::GetName() const {
+    return this->m_name;
+}
+
+void CustomEmotesContainer::SetName(const std::string& newName) {
+    this->m_name = newName;
+}
+
 
 Result<CustomEmoteDef*> CustomEmotesContainer::AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName) {
     //NOTE: multiple aliases for an emote that use the same name aren't inherently an issue, so they aren't checked for here.
