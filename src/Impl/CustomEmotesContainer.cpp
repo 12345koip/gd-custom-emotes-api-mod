@@ -123,7 +123,7 @@ static EmoteDef makeEmoteDefForCustom(const std::string_view name, const int abs
 }
 
 
-Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::string_view filePath, const std::string& rawEmoteName, const CustomEmoteOptions& options) {
+Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::string_view fileName, const std::string& rawEmoteName, const CustomEmoteOptions& options) {
     if (this->IsFull())
         return Err("This container is full. Please use another one.");
 
@@ -133,9 +133,9 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
     auto* textureCache = CCTextureCache::sharedTextureCache();
     auto* spriteFrameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
 
-    auto* texture = textureCache->addImage(filePath.data(), false);
+    auto* texture = textureCache->addImage(fileName.data(), false);
     if (!texture)
-        return Err("Image '{}' couldn't be added to the texture cache. Please check the path and try again!", filePath);
+        return Err("Image '{}' couldn't be added to the texture cache. Please check the path and try again!", fileName);
 
     const auto size = texture->getContentSize();
     const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
@@ -143,7 +143,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
 
 
     //...now see if it's there already.
-    if (spriteFrameCache->spriteFrameByName(targetName.data()))
+    if (spriteFrameCache->m_pSpriteFrames->objectForKey(targetName))
         return Err("Another emote is already using this sprite frame: '{}'", targetName);
 
     //and add it under the particle name.
@@ -186,7 +186,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
     const auto targetName = fmt::format("particle_{}_001.png", absoluteIndex);
 
     //...now see if it's there already.
-    if (spriteFrameCache->spriteFrameByName(targetName.data()))
+    if (spriteFrameCache->m_pSpriteFrames->objectForKey(targetName))
         return Err("Another emote is already using this sprite frame: '{}'", targetName);
 
     spriteFrameCache->addSpriteFrame(frame, targetName.c_str());

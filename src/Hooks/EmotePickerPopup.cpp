@@ -44,11 +44,14 @@ class $modify(EmotePickerPopup) {
 
 
     static void onModify(auto& self) {
-        if (!self.setHookPriority("EmotePickerPopup::onBuildWindowContent", Priority::VeryEarly))
+        if (!self.setHookPriority("EmotePickerPopup::onBuildWindowContent", Priority::First))
             log::warn("Could not set hook priority for EmotePickerPopup::onBuildWindowContent. Custom emotes may not work as expected!");
 
-        if (!self.setHookPriority("EmotePickerPopup::layoutEmoteGrid", Priority::VeryEarly))
+        if (!self.setHookPriority("EmotePickerPopup::layoutEmoteGrid", Priority::First))
             log::warn("Could not set hook priority for EmotePickerPopup::layoutEmoteGrid. Custom emotes may not work as expected!");
+
+        if (!self.setHookPriority("EmotePickerPopup::onPickEmote", Priority::First))
+            log::warn("Could not set hook priority for EmotePickerPopup::onPickEmote. Custom emotes may not work as expected!");
     }
 
     void onBuildWindowContent() {
@@ -115,5 +118,26 @@ class $modify(EmotePickerPopup) {
         }
 
         this->m_scrollContentLayer->setContentHeight(5.0f - currentY);
+    }
+
+    void onPickEmote(CCObject* sender) {
+        if (!this->canAddEmote()) return;
+
+        auto* sprite = static_cast<CCMenuItemSpriteExtra*>(sender);
+        const auto tag = sprite->getTag();
+
+        if (tag < kStartingBase) //not a custom emote.
+            return EmotePickerPopup::onPickEmote(sender);
+
+        auto* dataManager = DataManager::GetSingleton();
+        auto* def = dataManager->DefBySpriteTag(tag);
+
+        if (!def) {
+            log::warn("CustomEmoteDef not found for CustomEmote. Sprite tag: {}", tag);
+            return;
+        }
+
+        GameManager::sharedState()->addRecentEmote(def->GetEmoteDef()->m_name);
+        this->m_input->insertAtCursor(fmt::format(":{}:", def->GetEmoteDef()->m_name));
     }
 };

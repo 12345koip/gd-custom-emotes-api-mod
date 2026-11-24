@@ -236,13 +236,13 @@ namespace CustomEmotes {
 
             /**
              * Creates a new custom emote using the provided image and name.
-             * @param filePath The path to the standalone emote image file.
-             * @param emoteName The name for the emote. This will be converted to lowercase.
+             * @param fileName The file name for the  standalone emote image file.
+             * @param rawEmoteName The name for the emote. This will be converted to lowercase.
              * @param options Optional extra data for the custom emote.
              * @return The CustomEmoteDef associated with the emote, if creation was successful.
              * @note If you are using a spritesheet, use `NewEmoteFromSpritesheet` instead.
              */
-            geode::Result<CustomEmoteDef*> NewEmoteFromImage(const std::string_view filePath, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
+            geode::Result<CustomEmoteDef*> NewEmoteFromImage(const std::string_view fileName, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
 
             /**
              * Creates a new custom emote using the provided sprite frame and name.
