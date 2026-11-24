@@ -149,10 +149,8 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
     const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
     const auto targetName = fmt::format("particle_{}_001.png", absoluteIndex);
 
-
-    //...now see if it's there already.
-    if (spriteFrameCache->m_pSpriteFrames->objectForKey(targetName))
-        return Err("Another emote is already using this sprite frame: '{}'", targetName);
+    if (size.width <= 0 || size.height <= 0)
+        return Err("Image '{}' has invalid dimensions", fileName);
 
     //and add it under the particle name.
     auto* frame = CCSpriteFrame::createWithTexture(texture, {0, 0, size.width, size.height});
@@ -192,11 +190,6 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
 
     const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
     const auto targetName = fmt::format("particle_{}_001.png", absoluteIndex);
-
-    //...now see if it's there already.
-    if (spriteFrameCache->m_pSpriteFrames->objectForKey(targetName))
-        return Err("Another emote is already using this sprite frame: '{}'", targetName);
-
     spriteFrameCache->addSpriteFrame(frame, targetName.c_str());
 
 

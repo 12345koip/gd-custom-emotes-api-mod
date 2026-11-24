@@ -7,7 +7,7 @@ using namespace CustomEmotes::Impl;
 
 class $modify(EmoteSprite) {
     static void onModify(auto& self) {
-        if (!self.setHookPriority("EmoteSprite::defForName", Priority::VeryEarly))
+        if (!self.setHookPriority("EmoteSprite::defForName", Priority::First))
             log::warn("Could not set hook priority for EmoteSprite::defForName. Custom emotes may not work as expected!");
     }
 
