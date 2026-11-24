@@ -137,7 +137,6 @@ class $modify(EmotePickerPopup) {
             return;
         }
 
-        GameManager::sharedState()->addRecentEmote(def->GetEmoteDef()->m_name);
         this->m_input->insertAtCursor(fmt::format(":{}:", def->GetEmoteDef()->m_name));
     }
 };

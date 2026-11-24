@@ -65,4 +65,5 @@ $on_game(Loaded) {
 - Each `CustomEmotesContainer` has a size limit of 150 emotes.
 - `CustomEmotesContainer`s support both relative and absolute emote indices, relative being an emote index based from the container's base offset, and absolute being an emote index based from 0. Emote indices are managed internally to prevent collisions.
 - When reading properties from a `CustomEmoteDef` that direct getter methods aren't available for, use `GetEmoteDef` and read them from there.
+- - Custom emotes will **not** be placed in the recents section of the picker popup. This is because the emote's owner can't be guaranteed between sessions, so there's no way to ensure it is resolved to the correct emote.
 - View the header file for further documentation.
