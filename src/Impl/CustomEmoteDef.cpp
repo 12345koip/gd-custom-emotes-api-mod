@@ -11,7 +11,7 @@ CustomEmoteDef* CustomEmoteDef::GetCanonicalDef() const {
     return this->m_canonicalDef;
 }
 
-EmoteDef* CustomEmoteDef::GetDef() {
+const EmoteDef* CustomEmoteDef::GetEmoteDef() const {
     return &this->m_def;
 }
 
@@ -25,6 +25,31 @@ int CustomEmoteDef::GetAbsoluteParticleIndex() const {
 
 void CustomEmoteDef::SetEnabled(const bool enabled) {
     this->m_enabled = enabled;
+}
+
+void CustomEmoteDef::SetScale(const float newScale) {
+    this->m_def.m_scale = newScale;
+}
+
+void CustomEmoteDef::SetPositionalOffsetX(const float newX) {
+    this->m_def.m_x = newX;
+}
+
+void CustomEmoteDef::SetPositionalOffsetY(const float newY) {
+    this->m_def.m_y = newY;
+}
+
+void CustomEmoteDef::SetPositionalOffset(const CCPoint& newOffset) {
+    this->m_def.m_x = newOffset.x;
+    this->m_def.m_y = newOffset.y;
+}
+
+void CustomEmoteDef::SetColor(const ccColor3B& newColor) {
+    this->m_def.m_color = newColor;
+}
+
+void CustomEmoteDef::SetFlipX(const bool newFlipX) {
+    this->m_def.m_flipX = newFlipX;
 }
 
 Result<CustomEmoteDef*> CustomEmoteDef::AddAlias(const std::string& aliasName) {

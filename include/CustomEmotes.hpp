@@ -80,16 +80,49 @@ namespace CustomEmotes {
 
             /**
              * @return The EmoteDef corresponding to this emote.
-             * @note It is highly recommended that you do not modify this internal EmoteDef. Doing so may
-             * break your custom emotes and the API entirely. This getter is not marked as `const` for internal implementation
-             * reasons, and to allow the internal EmoteDef to be modified if absolutely necessary.
              */
-            EmoteDef* GetDef();
+            const EmoteDef* GetEmoteDef() const;
 
             /**
              * @return Whether or not this CustomEmoteDef is an alias for another.
              */
             bool IsAlias() const;
+
+            /**
+             * Sets the scale for emotes this CustomEmoteDef.
+             * @param newScale The new scale to be applied to the emote.
+             */
+            void SetScale(const float newScale);
+
+            /**
+             * Sets the x-axis positional offset for this CustomEmoteDef.
+             * @param newX The new positional offset on the x-axis.
+             */
+            void SetPositionalOffsetX(const float newX);
+
+            /**
+             * Sets the y-axis positional offset for this CustomEmoteDef.
+             * @param newY The new positional offset on the y-axis.
+             */
+            void SetPositionalOffsetY(const float newY);
+
+            /**
+             * Sets the positional offset for this CustomEmoteDef.
+             * @param newOffset The new positional offset.
+             */
+            void SetPositionalOffset(const cocos2d::CCPoint& newOffset);
+
+            /**
+             * Sets the color for this CustomEmoteDef.
+             * @param newColor The new color to be used.
+             */
+            void SetColor(const cocos2d::ccColor3B& newColor);
+
+            /**
+             * Used to control whether this emote should be flipped on the x-axis.
+             * @param newFlipX Whether or not this emote should be flipped.
+             */
+            void SetFlipX(const bool newFlipX);
 
             /**
              * @returns The CustomEmoteDef this one is an alias too, if present. If this is not an alias, this CustomEmoteDef is returned.
