@@ -60,6 +60,9 @@ $on_game(Loaded) {
 }
 ```
 
+### Extended functionality
+Some mods may require access to more features of this API, such as the ability to view all created `CustomEmotesContainer`s. For purposes such as this, you can `#include <kx_.custom-emotes-api/ExtendedCompatability.hpp>`, which provides some further functions which give access to some of the internals. View the header for documentation.
+
 ### Notes
 
 - If you are creating an emote from a sprite in a spritesheet, use `CustomEmotesContainer::NewEmoteFromSpritesheet`.

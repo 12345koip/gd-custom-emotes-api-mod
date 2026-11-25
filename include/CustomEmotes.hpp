@@ -56,7 +56,7 @@ namespace CustomEmotes {
 
         public:
             /**
-             * Adds an alias for this emote.
+             * @brief Adds an alias for this emote.
              * @param aliasName The name for the alias. This will be converted to lowercase.
              * @return A pointer to the CustomEmoteDef for the alias, if created successfully.
              * @note This cannot be called with an alias.
@@ -64,7 +64,7 @@ namespace CustomEmotes {
             geode::Result<CustomEmoteDef*> AddAlias(const std::string& aliasName);
 
             /**
-             * Controls this emote's enabled state. A disabled emote won't render anywhere.
+             * @brief Controls this emote's enabled state. A disabled emote won't render anywhere.
              * @param enabled Whether or not the emote should be enabled.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -99,7 +99,7 @@ namespace CustomEmotes {
             bool IsAlias() const;
 
             /**
-             * Sets the scale for emotes this CustomEmoteDef.
+             * @brief Sets the scale for emotes this CustomEmoteDef.
              * @param newScale The new scale to be applied to the emote.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -107,7 +107,7 @@ namespace CustomEmotes {
             void SetScale(const float newScale);
 
             /**
-             * Sets the x-axis positional offset for this CustomEmoteDef.
+             * @brief Sets the x-axis positional offset for this CustomEmoteDef.
              * @param newX The new positional offset on the x-axis.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -115,7 +115,7 @@ namespace CustomEmotes {
             void SetPositionalOffsetX(const float newX);
 
             /**
-             * Sets the y-axis positional offset for this CustomEmoteDef.
+             * @brief Sets the y-axis positional offset for this CustomEmoteDef.
              * @param newY The new positional offset on the y-axis.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -123,7 +123,7 @@ namespace CustomEmotes {
             void SetPositionalOffsetY(const float newY);
 
             /**
-             * Sets the positional offset for this CustomEmoteDef.
+             * @brief Sets the positional offset for this CustomEmoteDef.
              * @param newOffset The new positional offset.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -131,7 +131,7 @@ namespace CustomEmotes {
             void SetPositionalOffset(const cocos2d::CCPoint& newOffset);
 
             /**
-             * Sets the color for this CustomEmoteDef.
+             * @brief Sets the color for this CustomEmoteDef.
              * @param newColor The new color to be used.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -139,7 +139,7 @@ namespace CustomEmotes {
             void SetColor(const cocos2d::ccColor3B& newColor);
 
             /**
-             * Used to control whether this emote should be flipped on the x-axis.
+             * @brief Used to control whether this emote should be flipped on the x-axis.
              * @param newFlipX Whether or not this emote should be flipped.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
@@ -234,7 +234,7 @@ namespace CustomEmotes {
             ~CustomEmotesContainer() = default;
 
             /**
-             * Returns the CustomEmoteDef denoted by the index relative to this container's base, if associated with this container.
+             * @brief Returns the CustomEmoteDef denoted by the index relative to this container's base, if associated with this container.
              * @param index The particle index of the target CustomEmoteDef, relative to this container's base index.
              * @return The target CustomEmoteDef, if associated with this container.
              * @note Will not return an alias.
@@ -243,7 +243,7 @@ namespace CustomEmotes {
 
 
             /**
-             * Returns the CustomEmoteDef denoted by the index relative to this container's base, if associated with this container.
+             * @brief Returns the CustomEmoteDef denoted by the index relative to this container's base, if associated with this container.
              * @param index The `m_particleIndex` of the target CustomEmoteDef.
              * @return The target CustomEmoteDef, if associated with this container.
              * @note Will not return an alias.
@@ -251,7 +251,7 @@ namespace CustomEmotes {
             geode::Result<CustomEmoteDef*> DefByAbsoluteIndex(const int index) const;
 
             /**
-             * Returns the first CustomEmoteDef that matches `name`.
+             * @brief Returns the first CustomEmoteDef that matches `name`.
              * @param rawName The name of the emote to find the CustomEmoteDef for. This will be converted to lowercase.
              * @return The corresponding CustomEmoteDef, if found.
              * @note Try and avoid this where possible. This can return an alias.
@@ -259,7 +259,7 @@ namespace CustomEmotes {
             geode::Result<CustomEmoteDef*> DefByName(const std::string& rawName) const;
 
             /**
-             * Creates a new custom emote using the provided image and name.
+             * @brief Creates a new custom emote using the provided image and name.
              * @param fileName The file name for the  standalone emote image file.
              * @param rawEmoteName The name for the emote. This will be converted to lowercase.
              * @param options Optional extra data for the custom emote.
@@ -269,7 +269,7 @@ namespace CustomEmotes {
             geode::Result<CustomEmoteDef*> NewEmoteFromImage(const std::string_view fileName, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
 
             /**
-             * Creates a new custom emote using the provided sprite frame and name.
+             * @brief Creates a new custom emote using the provided sprite frame and name.
              * @param frameName The frame name of the target sprite in its spritesheet.
              * @param emoteName The name to use for the emote. This will be converted to lowercase.
              * @param options Optional extra data for the custom emote.
@@ -289,13 +289,13 @@ namespace CustomEmotes {
             void SetName(const std::string& newName);
 
             /**
-             * Checks if this container is full.
+             * @brief Checks if this container is full.
              * @return whether or not the container is full.
              */
             bool IsFull() const;
 
             /**
-             * Retrieves the relative base applied to CustomEmoteDefs which are a part of this container.
+             * @brief Retrieves the relative base applied to CustomEmoteDefs which are a part of this container.
              * @return The base index of this container.
              */
             int GetParticleIndexBase() const;
@@ -306,13 +306,13 @@ namespace CustomEmotes {
             bool IsEnabled() const;
 
             /**
-             * Setter to control if this container should render in the scroller.
+             * @brief Setter to control if this container should render in the scroller.
              * @param newEnabled Whether or not this container should show in the scroller.
              */
             void SetEnabled(const bool newEnabled);
 
             /**
-             * Creates an emote alias for the given custom emote.
+             * @brief Creates an emote alias for the given custom emote.
              * @param emote The custom emote to create an alias for.
              * @param aliasName The name to be given to the alias. This will be converted to lowercase.
              * @return The CustomEmoteDef for the alias, if created successfully.
@@ -336,7 +336,7 @@ namespace CustomEmotes {
             geode::Result<std::vector<CustomEmoteDef*>> GetAllAliasesForEmote(const CustomEmoteDef* emote) const;
 
             /**
-             * Creates a new CustomEmotesContainer with the provided name.
+             * @brief Creates a new CustomEmotesContainer with the provided name.
              * @param name The name for the container.
              * @return The container, if creation was successful.
              */

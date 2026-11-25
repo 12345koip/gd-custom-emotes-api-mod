@@ -9,7 +9,7 @@ namespace CustomEmotes::Impl {
     class DataManager final {
         private:
             std::vector<std::unique_ptr<CustomEmotesContainer>> m_openContainers {};
-            int m_currentEmoteBase = kStartingBase;;
+            int m_currentEmoteBase = kStartingBase;
 
         public:
             const std::vector<std::unique_ptr<CustomEmotesContainer>>& GetEmoteContainers() const {return this->m_openContainers;}
