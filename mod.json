@@ -13,7 +13,7 @@
 	"description": "Centralised support for custom emotes in mods",
     "tags": ["api", "developer", "interface"],
     "api": {
-        "include": ["include/*.hpp"]
+        "include": ["include/CustomEmotes.hpp", "include/ExtendedCompatability.hpp"]
     },
 	"dependencies": {
 		"geode.node-ids": ">=v1.23.3"
