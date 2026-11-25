@@ -57,7 +57,7 @@ namespace CustomEmotes {
         public:
             /**
              * Adds an alias for this emote.
-             * @param aliasName The name for the alias.
+             * @param aliasName The name for the alias. This will be converted to lowercase.
              * @return A pointer to the CustomEmoteDef for the alias, if created successfully.
              */
             geode::Result<CustomEmoteDef*> AddAlias(const std::string& aliasName);
@@ -98,36 +98,48 @@ namespace CustomEmotes {
             /**
              * Sets the scale for emotes this CustomEmoteDef.
              * @param newScale The new scale to be applied to the emote.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetScale(const float newScale);
 
             /**
              * Sets the x-axis positional offset for this CustomEmoteDef.
              * @param newX The new positional offset on the x-axis.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetPositionalOffsetX(const float newX);
 
             /**
              * Sets the y-axis positional offset for this CustomEmoteDef.
              * @param newY The new positional offset on the y-axis.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetPositionalOffsetY(const float newY);
 
             /**
              * Sets the positional offset for this CustomEmoteDef.
              * @param newOffset The new positional offset.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetPositionalOffset(const cocos2d::CCPoint& newOffset);
 
             /**
              * Sets the color for this CustomEmoteDef.
              * @param newColor The new color to be used.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetColor(const cocos2d::ccColor3B& newColor);
 
             /**
              * Used to control whether this emote should be flipped on the x-axis.
              * @param newFlipX Whether or not this emote should be flipped.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetFlipX(const bool newFlipX);
 
@@ -135,6 +147,11 @@ namespace CustomEmotes {
              * @returns The CustomEmoteDef this one is an alias too, if present. If this is not an alias, this CustomEmoteDef is returned.
              */
             CustomEmoteDef* GetCanonicalDef() const;
+
+            /**
+             * @returns All aliases corresponding to this custom emote.
+             */
+            geode::Result<std::vector<CustomEmoteDef*>> GetAliases() const;
     };
 
 
@@ -234,7 +251,7 @@ namespace CustomEmotes {
              * @return The corresponding CustomEmoteDef, if found.
              * @note Try and avoid this where possible.
              */
-            geode::Result<CustomEmoteDef*> DefByName(const std::string_view name) const;
+            geode::Result<CustomEmoteDef*> DefByName(const std::string& rawName) const;
 
             /**
              * Creates a new custom emote using the provided image and name.
@@ -292,7 +309,7 @@ namespace CustomEmotes {
             /**
              * Creates an emote alias for the given custom emote.
              * @param emote The custom emote to create an alias for.
-             * @param aliasName The name to be given to the alias.
+             * @param aliasName The name to be given to the alias. This will be converted to lowercase.
              * @return The CustomEmoteDef for the alias, if created successfully.
              */
             geode::Result<CustomEmoteDef*> AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName);
@@ -305,7 +322,13 @@ namespace CustomEmotes {
             /**
              * @return All the CustomEmoteDef aliases associated with this container.
              */
-            const std::vector<CustomEmoteDef*> GetAllCustomEmoteAliases() const;
+            std::vector<CustomEmoteDef*> GetAllCustomEmoteAliases() const;
+
+            /**
+             * @param emote The emote to retrieve all aliases for.
+             * @return All aliases for the give emote.
+             */
+            geode::Result<std::vector<CustomEmoteDef*>> GetAllAliasesForEmote(const CustomEmoteDef* emote) const;
 
             /**
              * Creates a new CustomEmotesContainer with the provided name.

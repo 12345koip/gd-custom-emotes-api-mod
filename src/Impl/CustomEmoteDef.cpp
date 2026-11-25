@@ -25,23 +25,64 @@ int CustomEmoteDef::GetAbsoluteParticleIndex() const {
 
 void CustomEmoteDef::SetEnabled(const bool enabled) {
     this->m_enabled = enabled;
+
+    if (!this->IsAlias()) {
+        auto result = this->GetAliases();
+        if (!result.isOk()) return;
+
+        for (auto* alias: result.unwrap())
+            alias->SetEnabled(enabled);
+    }
 }
 
 void CustomEmoteDef::SetScale(const float newScale) {
     this->m_def.m_scale = newScale;
+
+
+    if (!this->IsAlias()) {
+        auto result = this->GetAliases();
+        if (!result.isOk()) return;
+
+        for (auto* alias: result.unwrap())
+            alias->SetScale(newScale);
+    }
 }
 
 void CustomEmoteDef::SetPositionalOffsetX(const float newX) {
     this->m_def.m_x = newX;
+
+    if (!this->IsAlias()) {
+        auto result = this->GetAliases();
+        if (!result.isOk()) return;
+
+        for (auto* alias: result.unwrap())
+            alias->SetPositionalOffsetX(newX);
+    }
 }
 
 void CustomEmoteDef::SetPositionalOffsetY(const float newY) {
     this->m_def.m_y = newY;
+
+    if (!this->IsAlias()) {
+        auto result = this->GetAliases();
+        if (!result.isOk()) return;
+
+        for (auto* alias: result.unwrap())
+            alias->SetPositionalOffsetY(newY);
+    }
 }
 
 void CustomEmoteDef::SetPositionalOffset(const CCPoint& newOffset) {
     this->m_def.m_x = newOffset.x;
     this->m_def.m_y = newOffset.y;
+
+    if (!this->IsAlias()) {
+        auto result = this->GetAliases();
+        if (!result.isOk()) return;
+
+        for (auto* alias: result.unwrap())
+            alias->SetPositionalOffset(newOffset);
+    }
 }
 
 void CustomEmoteDef::SetColor(const ccColor3B& newColor) {
@@ -54,6 +95,10 @@ void CustomEmoteDef::SetFlipX(const bool newFlipX) {
 
 bool CustomEmoteDef::IsEnabled() const {
     return this->m_enabled;
+}
+
+Result<std::vector<CustomEmoteDef*>> CustomEmoteDef::GetAliases() const {
+    return this->m_owningContainer->GetAllAliasesForEmote(this);
 }
 
 Result<CustomEmoteDef*> CustomEmoteDef::AddAlias(const std::string& aliasName) {

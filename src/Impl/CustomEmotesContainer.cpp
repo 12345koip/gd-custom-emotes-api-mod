@@ -33,7 +33,9 @@ Result<CustomEmoteDef*> CustomEmotesContainer::DefByAbsoluteIndex(const int inde
 }
 
 //horrible time complexity, but oh well. there's no better way i can think of
-Result<CustomEmoteDef*> CustomEmotesContainer::DefByName(const std::string_view name) const {
+Result<CustomEmoteDef*> CustomEmotesContainer::DefByName(const std::string& rawName) const {
+    const auto name = geode::utils::string::toLower(rawName);
+
     //search standalones
     const auto it_standalone = std::ranges::find_if(this->m_emotes, [name](const auto& other) -> bool {
         return other->m_name == name;
@@ -75,8 +77,14 @@ void CustomEmotesContainer::SetName(const std::string& newName) {
 Result<CustomEmoteDef*> CustomEmotesContainer::AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName) {
     //NOTE: multiple aliases for an emote that use the same name aren't inherently an issue, so they aren't checked for here.
 
-    auto alias = std::make_shared<CustomEmoteDef>(*emote);
-    alias->m_name = aliasName;
+    if (emote->IsAlias())
+        return Err("cannot call CustomEmotesContainer::AddAliasForEmote with an emote alias");
+    if (emote->m_owningContainer != this)
+        return Err("Cannot create an alias for an emote that does not belong to this container ('{}')", aliasName);
+
+
+    const auto alias = std::make_shared<CustomEmoteDef>(*emote);
+    alias->m_name = geode::utils::string::toLower(aliasName);
     alias->m_canonicalDef = emote;
     alias->m_def.m_isAlias = true;
     alias->m_def.m_name = alias->m_name.c_str();
@@ -96,7 +104,7 @@ const std::vector<CustomEmoteDef*> CustomEmotesContainer::GetAllCustomEmoteDefs(
     return out;
 }
 
-const std::vector<CustomEmoteDef*> CustomEmotesContainer::GetAllCustomEmoteAliases() const {
+std::vector<CustomEmoteDef*> CustomEmotesContainer::GetAllCustomEmoteAliases() const {
     std::vector<CustomEmoteDef*> out {};
 
     //okay this views stuff is actually insanely cool
@@ -114,6 +122,22 @@ bool CustomEmotesContainer::IsEnabled() const {
 
 void CustomEmotesContainer::SetEnabled(const bool newEnabled) {
     this->m_enabled = newEnabled;
+}
+
+Result<std::vector<CustomEmoteDef*>> CustomEmotesContainer::GetAllAliasesForEmote(const CustomEmoteDef* emote) const {
+    if (emote->IsAlias())
+        return Err("cannot call CustomEmotesContainer::GetAllAliasesForEmote with an emote alias");
+
+    auto& aliasesContainer = this->m_emoteAliases.at(emote->m_relativeParticleIndex);
+
+    std::vector<CustomEmoteDef*> out {};
+    out.reserve(aliasesContainer.size());
+
+    std::ranges::transform(aliasesContainer.begin(), aliasesContainer.end(), std::back_inserter(out), [](const auto& ptr) -> CustomEmoteDef* {
+       return ptr.get();
+    });
+
+    return Ok(out);
 }
 
 
@@ -143,7 +167,7 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
 
     auto* texture = textureCache->addImage(fileName.data(), false);
     if (!texture)
-        return Err("Image '{}' couldn't be added to the texture cache. Please check the path and try again!", fileName);
+        return Err("Image '{}' couldn't be added to the texture cache", fileName);
 
     const auto size = texture->getContentSize();
     const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
@@ -169,6 +193,9 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromImage(const std::stri
     customDef->m_owningContainer = this;
     customDef->m_enabled = true;
 
+    //blank alias list.
+    this->m_emoteAliases[customDef->m_relativeParticleIndex] = {};
+
     this->m_emotes.push_back(customDef);
     return Ok(customDef.get());
 }
@@ -182,11 +209,8 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
     //must lower it to match vanilla.
     const auto emoteName = geode::utils::string::toLower(rawEmoteName);
 
-    //ensure the sprite is loaded from the sheet.
     auto* spriteFrameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
-    auto* frame = spriteFrameCache->spriteFrameByName(frameName.data());
-    if (!frame)
-        return Err("Sprite frame '{}' not found. Please ensure the spritesheet is loaded.", frameName);
+    auto* frame = spriteFrameCache->spriteFrameByName(frameName.data()); //geode fallback textures, no check :3
 
     const auto absoluteIndex = this->m_particleBase + this->m_nextRelativeIndex;
     const auto targetName = fmt::format("particle_{}_001.png", absoluteIndex);
@@ -205,6 +229,9 @@ Result<CustomEmoteDef*> CustomEmotesContainer::NewEmoteFromSpritesheet(const std
     customDef->m_relativeParticleIndex = this->m_nextRelativeIndex++;
     customDef->m_owningContainer = this;
     customDef->m_enabled = true;
+
+    //blank alias list.
+    this->m_emoteAliases[customDef->m_relativeParticleIndex] = {};
 
     this->m_emotes.push_back(customDef);
     return Ok(customDef.get());

@@ -19,8 +19,9 @@ class $modify(EmoteSprite) {
             if (result.isErr()) continue;
 
             const auto& customDef = result.unwrap();
-            const EmoteDef* matchingDef = customDef->GetEmoteDef();
-            return const_cast<EmoteDef*>(matchingDef);
+            if (!customDef->IsEnabled()) continue; //another mod might have an enabled one under the same name.
+
+            return const_cast<EmoteDef*>(customDef->GetEmoteDef());
         }
 
         return EmoteSprite::defForName(name);
