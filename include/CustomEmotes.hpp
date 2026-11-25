@@ -59,12 +59,15 @@ namespace CustomEmotes {
              * Adds an alias for this emote.
              * @param aliasName The name for the alias. This will be converted to lowercase.
              * @return A pointer to the CustomEmoteDef for the alias, if created successfully.
+             * @note This cannot be called with an alias.
              */
             geode::Result<CustomEmoteDef*> AddAlias(const std::string& aliasName);
 
             /**
              * Controls this emote's enabled state. A disabled emote won't render anywhere.
              * @param enabled Whether or not the emote should be enabled.
+             * @note Calling this on an alias will only affect the alias. If you need to change the emote
+             * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
             void SetEnabled(const bool enabled);
 
@@ -234,6 +237,7 @@ namespace CustomEmotes {
              * Returns the CustomEmoteDef denoted by the index relative to this container's base, if associated with this container.
              * @param index The particle index of the target CustomEmoteDef, relative to this container's base index.
              * @return The target CustomEmoteDef, if associated with this container.
+             * @note Will not return an alias.
              */
             geode::Result<CustomEmoteDef*> DefByRelativeIndex(const int index) const;
 
@@ -242,14 +246,15 @@ namespace CustomEmotes {
              * Returns the CustomEmoteDef denoted by the index relative to this container's base, if associated with this container.
              * @param index The `m_particleIndex` of the target CustomEmoteDef.
              * @return The target CustomEmoteDef, if associated with this container.
+             * @note Will not return an alias.
              */
             geode::Result<CustomEmoteDef*> DefByAbsoluteIndex(const int index) const;
 
             /**
              * Returns the first CustomEmoteDef that matches `name`.
-             * @param name The name of the emote to find the CustomEmoteDef for.
+             * @param rawName The name of the emote to find the CustomEmoteDef for. This will be converted to lowercase.
              * @return The corresponding CustomEmoteDef, if found.
-             * @note Try and avoid this where possible.
+             * @note Try and avoid this where possible. This can return an alias.
              */
             geode::Result<CustomEmoteDef*> DefByName(const std::string& rawName) const;
 
