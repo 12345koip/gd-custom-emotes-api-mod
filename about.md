@@ -20,7 +20,7 @@ Then, include the provided header:
 
 This will provide you with three classes you can use to create and customise your own emotes:
 
-- `CustomEmoteContainer`, which is used to group custom emotes of the same type together. One mod can create many custom emote containers.
+- `CustomEmoteContainer`, which is used to group custom emotes of the same type together. One mod can create many custom emote containers, and each container will show as a separate section under an `EmotePickerPopup`.
 - `CustomEmoteDef`, which represents a custom emote.
 - `CustomEmoteOptions`, which are used to specify extra options when creating a `CustomEmoteDef`, such as scale or positional offset.
 
@@ -69,3 +69,6 @@ $on_game(Loaded) {
 - When reading properties from a `CustomEmoteDef` that direct getter methods aren't available for, use `GetEmoteDef` and read them from there.
 - Custom emotes will **not** be placed in the recents section of the picker popup. This is because the emote's owner can't be guaranteed between sessions, so there's no way to ensure it is resolved to the correct emote.
 - View the header file for further documentation.
+
+### Bug Reports and Feature Requests
+If you find an issue with this mod, or would like to request for a feature to be added, please open up an Issue on the [GitHub repository](https://www.github.com/12345koip/gd-custom-emotes-api-mod)!
