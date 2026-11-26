@@ -1,25 +1,18 @@
 #pragma once
 #include <Geode/Geode.hpp>
+#include <Geode/loader/EventExport.hpp>
 
-#ifdef GEODE_IS_WINDOWS
-    #ifdef KX_CUSTOMEMOTESAPI_EXPORTING
-        #define EMOTESAPI_DLL __declspec(dllexport)
-    #else
-        #define EMOTESAPI_DLL __declspec(dllimport)
-    #endif
-#else
-    #define EMOTESAPI_DLL __attribute__((visibility("default")))
-#endif
+#undef MY_MOD_ID
+#define MY_MOD_ID "kx_.custom-emotes-api"
 
 namespace CustomEmotes {
     class CustomEmotesContainer;
-
 
     /**
      * A class representing a custom emote.
      * @note This class does not extend EmoteDef due to necessary field type changes.
      */
-    class EMOTESAPI_DLL CustomEmoteDef {
+    class CustomEmoteDef {
         private:
             /**
              * This emote's name.
@@ -48,7 +41,7 @@ namespace CustomEmotes {
             int m_relativeParticleIndex;
 
             /**
-             * Whether or not this emote is currently enabled. A disabled emote will effectively not render from now on.
+             * Whether or not this emote is currently enabled. A disabled emote will effectively not render.
              */
             bool m_enabled;
 
@@ -61,42 +54,42 @@ namespace CustomEmotes {
              * @return A pointer to the CustomEmoteDef for the alias, if created successfully.
              * @note This cannot be called with an alias.
              */
-            geode::Result<CustomEmoteDef*> AddAlias(const std::string& aliasName);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, geode::Result<CustomEmoteDef*>, AddAlias, (const std::string& aliasName), (this, aliasName));
 
             /**
              * @brief Controls this emote's enabled state. A disabled emote won't render anywhere.
-             * @param enabled Whether or not the emote should be enabled.
+             * @param enabled Whether or not this emote should be enabled.
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetEnabled(const bool enabled);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetEnabled, (const bool enabled), (this, enabled));
 
             /**
              * @return Whether or not this custom emote will show in the scroller
              */
-            bool IsEnabled() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, bool, IsEnabled, (), (this));
 
             /**
              * @return The particle index of this emote, relative to it's owning CustomEmoteContainer's base.
              */
-            int GetRelativeParticleIndex() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, int, GetRelativeParticleIndex, (), (this));
 
             /**
              * @return The absolute particle index of this emote. It's texture is keyed in the texture cache under the same index.
              */
-            int GetAbsoluteParticleIndex() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, int, GetAbsoluteParticleIndex, (), (this));
 
             /**
-             * @return The EmoteDef corresponding to this emote.
+             * @return The EmoteDef corresponding to this custom emote.
              * @note To read standard game properties of this CustomEmoteDef, you should use this function
              * and read directly from its return result.
              */
-            const EmoteDef* GetEmoteDef() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, const EmoteDef*, GetEmoteDef, (), (this));
 
             /**
              * @return Whether or not this CustomEmoteDef is an alias for another.
              */
-            bool IsAlias() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, bool, IsAlias, (), (this));
 
             /**
              * @brief Sets the scale for emotes this CustomEmoteDef.
@@ -104,7 +97,7 @@ namespace CustomEmotes {
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetScale(const float newScale);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetScale, (const float newScale), (this, newScale));
 
             /**
              * @brief Sets the x-axis positional offset for this CustomEmoteDef.
@@ -112,7 +105,7 @@ namespace CustomEmotes {
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetPositionalOffsetX(const float newX);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetPositionalOffsetX, (const float newX), (this, newX));
 
             /**
              * @brief Sets the y-axis positional offset for this CustomEmoteDef.
@@ -120,7 +113,7 @@ namespace CustomEmotes {
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetPositionalOffsetY(const float newY);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetPositionalOffsetY, (const float newY), (this, newY));
 
             /**
              * @brief Sets the positional offset for this CustomEmoteDef.
@@ -128,7 +121,7 @@ namespace CustomEmotes {
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetPositionalOffset(const cocos2d::CCPoint& newOffset);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetPositionalOffset, (const cocos2d::CCPoint& newOffset), (this, newOffset));
 
             /**
              * @brief Sets the color for this CustomEmoteDef.
@@ -136,7 +129,7 @@ namespace CustomEmotes {
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetColor(const cocos2d::ccColor3B& newColor);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetColor, (const cocos2d::ccColor3B& newColor), (this, newColor));
 
             /**
              * @brief Used to control whether this emote should be flipped on the x-axis.
@@ -144,24 +137,24 @@ namespace CustomEmotes {
              * @note Calling this on an alias will only affect the alias. If you need to change the emote
              * and its aliases, call it from `alias->GetCanonicalDef()`.
              */
-            void SetFlipX(const bool newFlipX);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmoteDef, void, SetFlipX, (const bool newFlipX), (this, newFlipX));
 
             /**
              * @returns The CustomEmoteDef this one is an alias too, if present. If this is not an alias, this CustomEmoteDef is returned.
              */
-            CustomEmoteDef* GetCanonicalDef() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, CustomEmoteDef*, GetCanonicalDef, (), (this));
 
             /**
              * @returns All aliases corresponding to this custom emote.
              */
-            geode::Result<std::vector<CustomEmoteDef*>> GetAliases() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmoteDef, geode::Result<std::vector<CustomEmoteDef*>>, GetAliases, (), (this));
     };
 
 
     /**
      * A helper structure used to provide options for a CustomEmoteDef.
      */
-    class EMOTESAPI_DLL CustomEmoteOptions {
+    class CustomEmoteOptions {
         public:
             CustomEmoteOptions() = default;
 
@@ -191,10 +184,11 @@ namespace CustomEmotes {
             bool flipX = false;
     };
 
+
     /**
      * A container class for CustomEmoteDefs. One container represents one new section to be drawn in the EmotePickerPopup.
      */
-    class EMOTESAPI_DLL CustomEmotesContainer {
+    class CustomEmotesContainer {
         private:
             /**
              * The internal container for all the custom emotes that are a part of this container.
@@ -239,7 +233,7 @@ namespace CustomEmotes {
              * @return The target CustomEmoteDef, if associated with this container.
              * @note Will not return an alias.
              */
-            geode::Result<CustomEmoteDef*> DefByRelativeIndex(const int index) const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, geode::Result<CustomEmoteDef*>, DefByRelativeIndex, (const int index), (this, index));
 
 
             /**
@@ -248,7 +242,7 @@ namespace CustomEmotes {
              * @return The target CustomEmoteDef, if associated with this container.
              * @note Will not return an alias.
              */
-            geode::Result<CustomEmoteDef*> DefByAbsoluteIndex(const int index) const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, geode::Result<CustomEmoteDef*>, DefByAbsoluteIndex, (const int index), (this, index));
 
             /**
              * @brief Returns the first CustomEmoteDef that matches `name`.
@@ -256,17 +250,17 @@ namespace CustomEmotes {
              * @return The corresponding CustomEmoteDef, if found.
              * @note Try and avoid this where possible. This can return an alias.
              */
-            geode::Result<CustomEmoteDef*> DefByName(const std::string& rawName) const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, geode::Result<CustomEmoteDef*>, DefByName, (const std::string& rawName), (this, rawName));
 
             /**
              * @brief Creates a new custom emote using the provided image and name.
-             * @param fileName The file name for the  standalone emote image file.
+             * @param fileName The file name for the standalone emote image file.
              * @param rawEmoteName The name for the emote. This will be converted to lowercase.
              * @param options Optional extra data for the custom emote.
              * @return The CustomEmoteDef associated with the emote, if creation was successful.
              * @note If you are using a spritesheet, use `NewEmoteFromSpritesheet` instead.
              */
-            geode::Result<CustomEmoteDef*> NewEmoteFromImage(const std::string_view fileName, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmotesContainer, geode::Result<CustomEmoteDef*>, NewEmoteFromImage, (const std::string_view fileName, const std::string& rawEmoteName, const CustomEmoteOptions& options), (this, fileName, rawEmoteName, options));
 
             /**
              * @brief Creates a new custom emote using the provided sprite frame and name.
@@ -276,40 +270,40 @@ namespace CustomEmotes {
              * @return The CustomEmoteDef associated with the emote, if creation was successful.
              * @note If you are using a standalone image, use `NewEmoteFromImage` instead.
              */
-            geode::Result<CustomEmoteDef*> NewEmoteFromSpritesheet(const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options = {});
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmotesContainer, geode::Result<CustomEmoteDef*>, NewEmoteFromSpritesheet, (const std::string_view frameName, const std::string& rawEmoteName, const CustomEmoteOptions& options), (this, frameName, rawEmoteName, options));
 
             /**
              * @return The name of this CustomEmotesContainer.
              */
-            const std::string_view GetName() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, const std::string_view, GetName, (), (this));
 
             /**
              * @param newName The new name for this container.
              */
-            void SetName(const std::string& newName);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmotesContainer, void, SetName, (const std::string& newName), (this, newName));
 
             /**
              * @brief Checks if this container is full.
              * @return whether or not the container is full.
              */
-            bool IsFull() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, bool, IsFull, (), (this));
 
             /**
              * @brief Retrieves the relative base applied to CustomEmoteDefs which are a part of this container.
              * @return The base index of this container.
              */
-            int GetParticleIndexBase() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, int, GetParticleIndexBase, (), (this));
 
             /**
              * @return Whether or not this container is enabled.
              */
-            bool IsEnabled() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, bool, IsEnabled, (), (this));
 
             /**
-             * @brief Setter to control if this container should render in the scroller.
-             * @param newEnabled Whether or not this container should show in the scroller.
+             * @brief Setter to control if this emote should render in the scroller.
+             * @param newEnabled Whether or not this container should be enabled.
              */
-            void SetEnabled(const bool newEnabled);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmotesContainer, void, SetEnabled, (const bool newEnabled), (this, newEnabled));
 
             /**
              * @brief Creates an emote alias for the given custom emote.
@@ -317,29 +311,31 @@ namespace CustomEmotes {
              * @param aliasName The name to be given to the alias. This will be converted to lowercase.
              * @return The CustomEmoteDef for the alias, if created successfully.
              */
-            geode::Result<CustomEmoteDef*> AddAliasForEmote(CustomEmoteDef* emote, const std::string& aliasName);
+            GEODE_EVENT_EXPORT_MEMBER(CustomEmotesContainer, geode::Result<CustomEmoteDef*>, AddAliasForEmote, (CustomEmoteDef* emote, const std::string& aliasName), (this, emote, aliasName));
 
             /**
              * @return All the CustomEmoteDefs associated with this container.
              */
-            const std::vector<CustomEmoteDef*> GetAllCustomEmoteDefs() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, const std::vector<CustomEmoteDef*>, GetAllCustomEmoteDefs, (), (this));
 
             /**
              * @return All the CustomEmoteDef aliases associated with this container.
              */
-            std::vector<CustomEmoteDef*> GetAllCustomEmoteAliases() const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, std::vector<CustomEmoteDef*>, GetAllCustomEmoteAliases, (), (this));
 
             /**
              * @param emote The emote to retrieve all aliases for.
              * @return All aliases for the give emote.
              */
-            geode::Result<std::vector<CustomEmoteDef*>> GetAllAliasesForEmote(const CustomEmoteDef* emote) const;
+            GEODE_EVENT_EXPORT_MEMBER_CONST(CustomEmotesContainer, geode::Result<std::vector<CustomEmoteDef*>>, GetAllAliasesForEmote, (const CustomEmoteDef* emote), (this, emote));
 
             /**
              * @brief Creates a new CustomEmotesContainer with the provided name.
              * @param name The name for the container.
              * @return The container, if creation was successful.
              */
-            static geode::Result<CustomEmotesContainer*> create(const std::string& name);
+            GEODE_EVENT_EXPORT_MEMBER_STATIC(geode::Result<CustomEmotesContainer*>, create, (const std::string& name), (name));
     };
 }
+
+#undef MY_MOD_ID

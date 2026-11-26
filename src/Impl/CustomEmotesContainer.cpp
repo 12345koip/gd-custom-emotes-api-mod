@@ -1,3 +1,4 @@
+#define GEODE_DEFINE_EVENT_EXPORTS
 #include "include/CustomEmotes.hpp"
 #include "DataManager/DataManager.hpp"
 #include <ranges>
