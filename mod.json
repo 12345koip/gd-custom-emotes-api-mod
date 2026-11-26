@@ -8,7 +8,7 @@
 	},
 	"id": "kx_.custom-emotes-api",
 	"name": "Custom Emotes API",
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"developer": "kx_",
 	"description": "Centralised support for custom emotes in mods",
     "tags": ["api", "developer", "interface"],

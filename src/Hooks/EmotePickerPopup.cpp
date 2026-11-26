@@ -52,6 +52,24 @@ class $modify(EmotePickerPopup) {
 
         if (!self.setHookPriority("EmotePickerPopup::onPickEmote", Priority::First))
             log::warn("Could not set hook priority for EmotePickerPopup::onPickEmote. Custom emotes may not work as expected!");
+
+
+
+
+        //better emote picker will handle laying out the emote grid, including custom emotes.
+        if (Loader::get()->isModLoaded("kx_.better-emote-picker")) {
+            log::info("Better emote picker is loaded, disabling conflicting hooks.");
+
+            auto hookRes = self.getHook("EmotePickerPopup::layoutEmoteGrid");
+            if (hookRes.isErr()) {
+                log::warn("Could not get hook for EmotePickerPopup::layoutEmoteGrid: {}", hookRes.unwrapErr());
+                return;
+            }
+
+            auto* hook = hookRes.unwrap();
+            hook->setAutoEnable(false);
+            log::info("Successfully disabled hook for EmotePickerPopup::layoutEmoteGrid");
+        }
     }
 
     void onBuildWindowContent() {
@@ -63,14 +81,6 @@ class $modify(EmotePickerPopup) {
                 emoteCell->removeFromParent();
 
             container.clear();
-        }
-
-        //tag the custom recent emotes so onPickEmote recognises them
-        for (auto* recent: this->m_recentEmoteButtons) {
-            auto* sprite = static_cast<EmoteSprite*>(recent->getNormalImage());
-
-            if (sprite->m_emoteDef->m_particleIndex >= kStartingBase)
-                sprite->setTag(sprite->m_emoteDef->m_particleIndex);
         }
 
         //now add all custom emotes.

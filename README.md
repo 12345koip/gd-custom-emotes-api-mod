@@ -58,6 +58,8 @@ $on_game(Loaded) {
 }
 
 ```
+### Compatability
+Some mods may require access to some extended compatability features to correctly support custom emotes. For this, a second header is supplied - `ExtendedCompatability.hpp`. See that header for documentation.
 
 ### Notes
 
